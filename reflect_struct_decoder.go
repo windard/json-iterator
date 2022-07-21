@@ -1101,11 +1101,15 @@ type stringSliceModeNumberSliceDecoder struct {
 }
 
 func (decoder *stringSliceModeNumberSliceDecoder) Decode(ptr unsafe.Pointer, iter *Iterator) {
-	sliceElemDecoder := decoder.elemDecoder.(*sliceDecoder)
+	var sliceElemDecoder *sliceDecoder
+	if _, ok := decoder.elemDecoder.(*placeholderDecoder); ok {
+		sliceElemDecoder = decoder.elemDecoder.(*placeholderDecoder).decoder.(*sliceDecoder)
+	} else {
+		sliceElemDecoder = decoder.elemDecoder.(*sliceDecoder)
+	}
 	stringSliceModeElemDecoder := sliceDecoder{
 		sliceType:   sliceElemDecoder.sliceType,
 		elemDecoder: &stringModeNumberDecoder{sliceElemDecoder.elemDecoder},
 	}
 	stringSliceModeElemDecoder.Decode(ptr, iter)
 }
-

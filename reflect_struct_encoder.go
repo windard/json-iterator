@@ -2,10 +2,11 @@ package jsoniter
 
 import (
 	"fmt"
-	"github.com/modern-go/reflect2"
 	"io"
 	"reflect"
 	"unsafe"
+
+	"github.com/modern-go/reflect2"
 )
 
 func encoderOfStruct(ctx *ctx, typ reflect2.Type) ValEncoder {
@@ -219,7 +220,12 @@ func (encoder *stringSliceModeNumberSliceEncoder) IsEmpty(ptr unsafe.Pointer) bo
 }
 
 func (encoder *stringSliceModeNumberSliceEncoder) Encode(ptr unsafe.Pointer, stream *Stream) {
-	sliceElemEncoder := encoder.elemEncoder.(*sliceEncoder)
+	var sliceElemEncoder *sliceEncoder
+	if _, ok := encoder.elemEncoder.(*placeholderEncoder); ok {
+		sliceElemEncoder = encoder.elemEncoder.(*placeholderEncoder).encoder.(*sliceEncoder)
+	} else {
+		sliceElemEncoder = encoder.elemEncoder.(*sliceEncoder)
+	}
 	stringSliceModeElemEncode := &sliceEncoder{
 		sliceType: sliceElemEncoder.sliceType,
 		elemEncoder: &stringModeNumberEncoder{

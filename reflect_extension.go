@@ -2,12 +2,13 @@ package jsoniter
 
 import (
 	"fmt"
-	"github.com/modern-go/reflect2"
 	"reflect"
 	"sort"
 	"strings"
 	"unicode"
 	"unsafe"
+
+	"github.com/modern-go/reflect2"
 )
 
 var typeDecoders = map[string]ValDecoder{}
@@ -452,8 +453,8 @@ func processTags(structDescriptor *StructDescriptor, cfg *frozenConfig) {
 					binding.Decoder = &stringModeStringDecoder{binding.Decoder, cfg}
 					binding.Encoder = &stringModeStringEncoder{binding.Encoder, cfg}
 				} else if binding.Field.Type().Kind() == reflect.Slice {
-					binding.Encoder = &stringSliceModeNumberSliceEncoder{binding.Encoder}
 					binding.Decoder = &stringSliceModeNumberSliceDecoder{binding.Decoder}
+					binding.Encoder = &stringSliceModeNumberSliceEncoder{binding.Encoder}
 				} else {
 					binding.Decoder = &stringModeNumberDecoder{binding.Decoder}
 					binding.Encoder = &stringModeNumberEncoder{binding.Encoder}
